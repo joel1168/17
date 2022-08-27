@@ -1,12 +1,12 @@
 import { useNavigation } from '@react-navigation/core'
 import React, { useEffect, useState } from 'react'
 import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ref, set, update, onValue, remove } from "firebase/database";
+import { db } from '../firebase'; 
 import { auth } from '../firebase'
 
 
-/*const db = openDatabase({
-  name: "rn_sqlite",
-});*/
+
 
 
 const LoginScreen = () => {
@@ -16,14 +16,13 @@ const LoginScreen = () => {
   const navigation = useNavigation()
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
+    const unregistered = auth.onAuthStateChanged(user => {
       if (user) {
         navigation.replace("Home")
         
       }
     })
-
-    return unsubscribe
+    return unregistered
   }, [])
 
   const handleSignUp = () => {
@@ -32,6 +31,17 @@ const LoginScreen = () => {
       .then(userCredentials => {
         const user = userCredentials.user;
         console.log('Registered with:', user.email);
+        set(ref(db), {          
+          email: email,
+          password: password  
+        }).then(() => {
+          // Data saved successfully!
+          console.log('data updated!');    
+      })  
+          .catch((error) => {
+              // The write failed...
+              alert(error);
+          });
 
       })
       .catch(error => alert(error.message))
@@ -55,14 +65,13 @@ const LoginScreen = () => {
       <View style={styles.inputContainer}>
         <TextInput
           placeholder="Email"
-          value={email}
-          onChangeText={text => setEmail(text)}
+          onChangeText={(email) => {setEmail(email)}} 
           style={styles.input}
         />
         <TextInput
           placeholder="Password"
           value={password}
-          onChangeText={text => setPassword(text)}
+          onChangeText={password => setPassword(password)}
           style={styles.input}
           secureTextEntry
         />

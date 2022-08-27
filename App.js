@@ -9,6 +9,24 @@ import ContactUsPage from './screens/ContactUsPage';
 
 const Stack = createNativeStackNavigator();
 
+function createData() {
+   
+  // unique ID form firebase
+              // const newKey = push(child(ref(database), 'users')).key;
+  
+              set(ref(db, 'users/' + username), {          
+                username: username,
+                email: email  
+              }).then(() => {
+                // Data saved successfully!
+                alert('data updated!');    
+            })  
+                .catch((error) => {
+                    // The write failed...
+                    alert(error);
+                });
+    }
+
  
 export default function App() {
   
